@@ -24,6 +24,11 @@ def count_word_occurrences(file_path):
 file_path = 'example.txt'  # Path to your text file
 word_counts = count_word_occurrences(file_path)
 
-# Print the word counts
-for word, count in word_counts.items():
-    print(f'{word}: {count}')
+# Print all words and their counts
+for word in sorted(word_counts.keys()):
+    print(f'{word}: {word_counts[word]}')
+# Calculate the total count of words
+total_words = sum(word_counts.values())
+
+# Print the total count of words
+print(f'Total words count: {total_words}')
