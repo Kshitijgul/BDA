@@ -1,0 +1,29 @@
+def count_word_occurrences(file_path):
+    # Dictionary to store word counts
+    word_counts = {}
+
+    # Open the file in read mode
+    with open(file_path, 'r') as file:
+        # Read each line in the file
+        for line in file:
+            # Tokenize the line into words
+            words = line.split()
+
+            # Iterate over each word
+            for word in words:
+                # Remove punctuation and convert to lowercase
+                word = word.strip().lower()
+
+                # Update word count in dictionary
+                if word:
+                    word_counts[word] = word_counts.get(word, 0) + 1
+
+    return word_counts
+
+# Example usage:
+file_path = 'example.txt'  # Path to your text file
+word_counts = count_word_occurrences(file_path)
+
+# Print the word counts
+for word, count in word_counts.items():
+    print(f'{word}: {count}')

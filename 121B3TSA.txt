@@ -1,0 +1,70 @@
+import pandas as pd 
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+import seaborn as sns
+from statsmodels.tsa.stattools import adfuller
+
+df1 = pd.read_csv('AirPassengers.csv')
+print(df1.head(10))
+print(df1.dtypes)
+
+# we are doing time series analysis then we have to convert the data type 
+df1 = pd.read_csv('AirPassengers.csv', parse_dates=['Month'])
+df1.dtypes
+
+# Month should be treated as index Columns so then :
+df1 = pd.read_csv('AirPassengers.csv', parse_dates=['Month'], index_col=['Month'])
+
+#Subpart of that dataset
+df1['1949-01-01':'1960-08-01']
+
+df1.loc['1960-07-01']
+
+df1.plot(figsize=(10, 6))
+plt.show()
+
+# Seasonality is changed so we have to use Multiplicative Model 
+df1_mul_descompose = seasonal_decompose(df1, model="multiplicative")
+df1_mul_descompose.plot()
+plt.show()
+
+# Add below function
+df_temp = df1.copy()
+df_temp['Year'] = pd.DatetimeIndex(df_temp.index).year
+df_temp['Month'] = pd.DatetimeIndex(df_temp.index).month
+
+# Stacked line plot
+plt.figure(figsize=(10, 10))
+plt.title('Seasonality of the Time Series')
+print(df_temp.columns)
+sns.pointplot(x='Month', y='#Passengers', hue='Year', data=df_temp)
+
+
+
+def stationarity_test(timeseries):
+    # Get rolling statistics for window = 12 i.e. yearly statistics
+    rolling_mean = timeseries.rolling(window=12).mean()
+    rolling_std = timeseries.rolling(window=12).std()
+
+    # Plot rolling statistic
+    plt.figure(figsize=(10, 6))
+    plt.xlabel('Years')
+    plt.ylabel('No of Air Passengers')
+    plt.title('Stationary Test: Rolling Mean and Standard Deviation')
+    plt.plot(timeseries, color='blue', label='Original')
+    plt.plot(rolling_mean, color='green', label='Rolling Mean')
+    plt.plot(rolling_std, color='red', label='Rolling Std')
+    plt.legend()
+    plt.show()
+
+    # Dickey-Fuller test
+    print('Results of Dickey-Fuller Test')
+    df_test = adfuller(timeseries)
+    df_output = pd.Series(df_test[0:4], index=['Test Statistic', 'p-value', '#Lags Used', 'Number of Observations Used'])
+    for key, value in df_test[4].items():
+        df_output['Critical Value (%s)' % key] = value
+    print(df_output)
+
+
+stationarity_test(df1)
